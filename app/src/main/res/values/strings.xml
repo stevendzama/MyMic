@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Live Mic</string>
+    <string name="start">START</string>
+    <string name="stop">STOP</string>
+    <string name="status_idle">Tap START and speak into your phone</string>
+    <string name="status_live">You\'re live, speak into your phone</string>
+    <string name="need_mic_permission">Live Mic needs microphone permission to work. Allow it in Settings &gt; Apps &gt; Live Mic &gt; Permissions.</string>
+    <string name="route_bluetooth">Playing on: %1$s</string>
+    <string name="route_phone">No Bluetooth speaker connected</string>
+    <string name="no_speaker_warning">Connect your Bluetooth speaker in your phone\'s Bluetooth settings first. Without it, sound comes out of the phone itself and will squeal.</string>
+    <string name="gain_label">Volume boost: %1$d%%</string>
+    <string name="noise_reduction">Reduce background noise</string>
+    <string name="feedback_tip">Tip: if the speaker squeals, step away from it or lower the volume boost.</string>
+    <string name="channel_name">Live microphone</string>
+    <string name="notification_title">Live Mic is on</string>
+    <string name="notification_text">Your phone\'s mic is playing through the speaker</string>
+</resources>
