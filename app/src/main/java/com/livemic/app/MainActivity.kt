@@ -132,7 +132,7 @@ class MainActivity : Activity() {
         toggle.text = getString(if (live) R.string.stop else R.string.start)
         meter.progress = ((loop?.level ?: 0f) * 100).roundToInt()
         status.text = when {
-            live -> getString(R.string.status_live)
+            loop != null -> getString(R.string.status_live, loop.appDelayMs)
             MicService.lastError != null -> MicService.lastError
             else -> getString(R.string.status_idle)
         }

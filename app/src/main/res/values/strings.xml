@@ -4,7 +4,7 @@
     <string name="start">START</string>
     <string name="stop">STOP</string>
     <string name="status_idle">Tap START and speak into your phone</string>
-    <string name="status_live">You\'re live, speak into your phone</string>
+    <string name="status_live">You\'re live, speak into your phone\nApp delay: %1$d ms (Bluetooth adds more)</string>
     <string name="need_mic_permission">Live Mic needs microphone permission to work. Allow it in Settings &gt; Apps &gt; Live Mic &gt; Permissions.</string>
     <string name="route_bluetooth">Playing on: %1$s</string>
     <string name="route_phone">No Bluetooth speaker connected</string>

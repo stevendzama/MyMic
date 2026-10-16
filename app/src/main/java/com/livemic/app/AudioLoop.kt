@@ -25,6 +25,11 @@ class AudioLoop(
     var level = 0f
         private set
 
+    /** Delay added by this app's own buffers, in ms. Bluetooth adds its own on top. */
+    @Volatile
+    var appDelayMs = 0
+        private set
+
     @Volatile private var running = false
     @Volatile private var record: AudioRecord? = null
     @Volatile private var track: AudioTrack? = null
@@ -69,7 +74,8 @@ class AudioLoop(
                 // MIC (not VOICE_COMMUNICATION) so Android doesn't switch the speaker into call mode.
                 .setAudioSource(MediaRecorder.AudioSource.MIC)
                 .setAudioFormat(format(rate, encoding, AudioFormat.CHANNEL_IN_MONO))
-                .setBufferSizeInBytes(max(inMin, chunk * 2 * 4))
+                // Small on purpose: if playback stalls, old audio overflows here instead of piling up as delay.
+                .setBufferSizeInBytes(max(inMin, chunk * 2 * 2))
                 .build()
         } catch (e: Exception) {
             fail("Couldn't open the microphone: ${e.message}")
@@ -90,7 +96,8 @@ class AudioLoop(
                         .build()
                 )
                 .setAudioFormat(format(rate, encoding, AudioFormat.CHANNEL_OUT_MONO))
-                .setBufferSizeInBytes(outMin * 2)
+                // Room for up to 250 ms; only as much as needed is used (see resizeBuffer below).
+                .setBufferSizeInBytes(max(outMin * 2, rate / 4 * 2))
                 .setTransferMode(AudioTrack.MODE_STREAM)
                 .setPerformanceMode(AudioTrack.PERFORMANCE_MODE_LOW_LATENCY)
                 .build()
@@ -107,11 +114,30 @@ class AudioLoop(
         track = out
         applyRouting()
 
+        // The speaker buffer is where most of the app's delay sits. Start it at 10 ms and grow it
+        // 10 ms at a time only when the speaker runs dry (an underrun), so within a few seconds it
+        // settles at the smallest size this phone and speaker can play smoothly.
+        val maxFrames = out.bufferCapacityInFrames
+        var bufferFrames = rate / 100
+        fun resizeBuffer(frames: Int) {
+            val actual = out.setBufferSizeInFrames(frames.coerceAtMost(maxFrames))
+            if (actual > 0) bufferFrames = actual
+            appDelayMs = (bufferFrames + chunk) * 1000 / rate
+        }
+        resizeBuffer(bufferFrames)
+
         val buf = ShortArray(chunk)
         try {
+            // Pre-fill with silence so starting up doesn't count as an underrun.
+            out.write(ShortArray(bufferFrames), 0, bufferFrames)
             rec.startRecording()
             out.play()
+            var lastUnderruns = out.underrunCount
             while (running) {
+                val underruns = out.underrunCount
+                if (underruns > lastUnderruns && bufferFrames < maxFrames) resizeBuffer(bufferFrames + rate / 100)
+                lastUnderruns = underruns
+
                 val n = rec.read(buf, 0, buf.size)
                 if (n < 0) {
                     fail("The microphone stopped working (error $n).")
