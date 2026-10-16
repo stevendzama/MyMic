@@ -57,14 +57,14 @@ class MainActivity : Activity() {
             if (MicService.activeLoop != null) stopMic() else startMicWithPermission()
         }
 
-        // Slider runs 50%..400%.
+        // Slider runs 10%..400%.
         val gain = findViewById<SeekBar>(R.id.gain)
-        gain.max = 350
-        gain.progress = (MicSettings.gain * 100).roundToInt() - 50
+        gain.max = 390
+        gain.progress = (MicSettings.gain * 100).roundToInt() - 10
         showGain()
         gain.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(bar: SeekBar, progress: Int, fromUser: Boolean) {
-                MicSettings.gain = (progress + 50) / 100f
+                MicSettings.gain = (progress + 10) / 100f
                 showGain()
             }
 

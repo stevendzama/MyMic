@@ -11,8 +11,8 @@ android {
         applicationId = "io.github.stevendzama.livemic"
         minSdk = 26
         targetSdk = 35
-        versionCode = 8
-        versionName = "1.7"
+        versionCode = 9
+        versionName = "1.8"
     }
 
     // The keystore comes from CI (see .github/workflows/build-apk.yml) and never lives in the repo.

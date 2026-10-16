@@ -11,7 +11,7 @@ microphone for a Bluetooth speaker. Speak into the phone and your voice comes ou
   Bluetooth itself adds about 0.15–0.25 s of delay, and no app can remove that.
 - Runs as a **foreground service**, so it keeps going with the screen off. A notification
   with a Stop button shows while the mic is on.
-- Includes a volume boost (50–400%), a level meter, optional noise reduction, and a
+- Includes a volume boost (10–400%), a level meter, optional noise reduction, and a
   warning when no Bluetooth speaker is connected (the phone speaker would squeal).
 
 Requires Android 8.0 or newer.
