@@ -27,7 +27,7 @@ class AudioLoop(
 
     /** Delay added by this app's own buffers, in ms. Bluetooth adds its own on top. */
     @Volatile
-    var appDelayMs = 0
+    var appDelayMs = 0f
         private set
 
     @Volatile private var running = false
@@ -66,8 +66,8 @@ class AudioLoop(
             return
         }
 
-        // 2.5 ms chunks keep the delay low; Bluetooth itself adds roughly 150-250 ms on top.
-        val chunk = rate / 400
+        // 1.25 ms chunks keep the delay low; Bluetooth itself adds roughly 150-250 ms on top.
+        val chunk = rate / 800
 
         val rec = try {
             AudioRecord.Builder()
@@ -114,17 +114,17 @@ class AudioLoop(
         track = out
         applyRouting()
 
-        // The speaker buffer is where most of the app's delay sits. Start it at 2.5 ms (5 ms with the
-        // chunk) and grow it 2.5 ms at a time only when the speaker runs dry (an underrun), so within
-        // a few seconds it settles at the smallest size this phone and speaker can play smoothly.
+        // The speaker buffer is where most of the app's delay sits. Start it at 1.25 ms (2.5 ms with
+        // the chunk) and grow it by half only when the speaker runs dry (an underrun), so within a
+        // few clicks it settles at a size this phone and speaker can play smoothly.
         // Android may refuse to go that small; resizeBuffer then reports the size it really got.
         val maxFrames = out.bufferCapacityInFrames
-        val step = rate / 400
+        val step = rate / 800
         var bufferFrames = step
         fun resizeBuffer(frames: Int) {
             val actual = out.setBufferSizeInFrames(frames.coerceAtMost(maxFrames))
             if (actual > 0) bufferFrames = actual
-            appDelayMs = (bufferFrames + chunk) * 1000 / rate
+            appDelayMs = (bufferFrames + chunk) * 1000f / rate
         }
         resizeBuffer(bufferFrames)
 
@@ -137,7 +137,7 @@ class AudioLoop(
             var lastUnderruns = out.underrunCount
             while (running) {
                 val underruns = out.underrunCount
-                if (underruns > lastUnderruns && bufferFrames < maxFrames) resizeBuffer(bufferFrames + step)
+                if (underruns > lastUnderruns && bufferFrames < maxFrames) resizeBuffer(bufferFrames + max(step, bufferFrames / 2))
                 lastUnderruns = underruns
 
                 val n = rec.read(buf, 0, buf.size)
