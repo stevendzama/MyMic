@@ -66,8 +66,8 @@ class AudioLoop(
             return
         }
 
-        // 5 ms chunks keep the delay low; Bluetooth itself adds roughly 150-250 ms on top.
-        val chunk = rate / 200
+        // 2.5 ms chunks keep the delay low; Bluetooth itself adds roughly 150-250 ms on top.
+        val chunk = rate / 400
 
         val rec = try {
             AudioRecord.Builder()
@@ -114,11 +114,13 @@ class AudioLoop(
         track = out
         applyRouting()
 
-        // The speaker buffer is where most of the app's delay sits. Start it at 10 ms and grow it
-        // 10 ms at a time only when the speaker runs dry (an underrun), so within a few seconds it
-        // settles at the smallest size this phone and speaker can play smoothly.
+        // The speaker buffer is where most of the app's delay sits. Start it at 2.5 ms (5 ms with the
+        // chunk) and grow it 2.5 ms at a time only when the speaker runs dry (an underrun), so within
+        // a few seconds it settles at the smallest size this phone and speaker can play smoothly.
+        // Android may refuse to go that small; resizeBuffer then reports the size it really got.
         val maxFrames = out.bufferCapacityInFrames
-        var bufferFrames = rate / 100
+        val step = rate / 400
+        var bufferFrames = step
         fun resizeBuffer(frames: Int) {
             val actual = out.setBufferSizeInFrames(frames.coerceAtMost(maxFrames))
             if (actual > 0) bufferFrames = actual
@@ -135,7 +137,7 @@ class AudioLoop(
             var lastUnderruns = out.underrunCount
             while (running) {
                 val underruns = out.underrunCount
-                if (underruns > lastUnderruns && bufferFrames < maxFrames) resizeBuffer(bufferFrames + rate / 100)
+                if (underruns > lastUnderruns && bufferFrames < maxFrames) resizeBuffer(bufferFrames + step)
                 lastUnderruns = underruns
 
                 val n = rec.read(buf, 0, buf.size)
