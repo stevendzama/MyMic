@@ -25,6 +25,11 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".EqualizerActivity"
+            android:exported="false"
+            android:label="@string/eq_title" />
+
         <service
             android:name=".MicService"
             android:exported="false"

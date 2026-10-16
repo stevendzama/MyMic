@@ -116,6 +116,19 @@
             android:textSize="15sp" />
 
         <Button
+            android:id="@+id/equalizer"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="start|center_vertical"
+            android:minHeight="48dp"
+            android:paddingHorizontal="0dp"
+            android:text="@string/eq_button"
+            android:textAllCaps="false"
+            android:textColor="@color/accent"
+            android:textSize="15sp" />
+
+        <Button
             android:id="@+id/codec_settings"
             style="?android:attr/borderlessButtonStyle"
             android:layout_width="match_parent"

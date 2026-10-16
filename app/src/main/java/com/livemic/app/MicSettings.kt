@@ -8,11 +8,38 @@ object MicSettings {
     @Volatile var noiseReduction = true
     @Volatile var antiSqueal = true
 
+    /** Equalizer band centres, matching VLC's 10-band equalizer. */
+    val EQ_FREQS = doubleArrayOf(60.0, 170.0, 310.0, 600.0, 1000.0, 3000.0, 6000.0, 12000.0, 14000.0, 16000.0)
+    const val EQ_MAX_DB = 20f
+
+    @Volatile var eqEnabled = false
+    @Volatile var eqPreampDb = 0f
+    val eqBandsDb = FloatArray(EQ_FREQS.size)
+
+    /**
+     * Bumped after any equalizer change so the audio thread rebuilds its filters. The volatile
+     * write also makes the new [eqBandsDb] values visible to that thread.
+     */
+    @Volatile var eqVersion = 0
+        private set
+
+    fun eqChanged() {
+        eqVersion++
+    }
+
     fun load(context: Context) {
         val prefs = prefs(context)
         gain = prefs.getFloat(KEY_GAIN, gain)
         noiseReduction = prefs.getBoolean(KEY_NOISE, noiseReduction)
         antiSqueal = prefs.getBoolean(KEY_ANTI_SQUEAL, antiSqueal)
+        eqEnabled = prefs.getBoolean(KEY_EQ_ENABLED, eqEnabled)
+        eqPreampDb = prefs.getFloat(KEY_EQ_PREAMP, eqPreampDb)
+        prefs.getString(KEY_EQ_BANDS, null)
+            ?.split(',')
+            ?.mapNotNull { it.toFloatOrNull() }
+            ?.takeIf { it.size == eqBandsDb.size }
+            ?.forEachIndexed { i, db -> eqBandsDb[i] = db }
+        eqChanged()
     }
 
     fun save(context: Context) {
@@ -20,6 +47,9 @@ object MicSettings {
             .putFloat(KEY_GAIN, gain)
             .putBoolean(KEY_NOISE, noiseReduction)
             .putBoolean(KEY_ANTI_SQUEAL, antiSqueal)
+            .putBoolean(KEY_EQ_ENABLED, eqEnabled)
+            .putFloat(KEY_EQ_PREAMP, eqPreampDb)
+            .putString(KEY_EQ_BANDS, eqBandsDb.joinToString(","))
             .apply()
     }
 
@@ -28,4 +58,7 @@ object MicSettings {
     private const val KEY_GAIN = "gain"
     private const val KEY_NOISE = "noise_reduction"
     private const val KEY_ANTI_SQUEAL = "anti_squeal"
+    private const val KEY_EQ_ENABLED = "eq_enabled"
+    private const val KEY_EQ_PREAMP = "eq_preamp_db"
+    private const val KEY_EQ_BANDS = "eq_bands_db"
 }

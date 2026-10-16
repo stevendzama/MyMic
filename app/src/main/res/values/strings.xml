@@ -14,6 +14,16 @@
     <string name="anti_squeal">Stop squealing (anti-feedback)</string>
     <string name="squeals_blocked">Squeals blocked: %1$d</string>
     <string name="feedback_tip">Tip: if the speaker squeals, step away from it or lower the volume boost.</string>
+    <string name="eq_button">Equalizer (tame squeals) ›</string>
+    <string name="eq_title">Equalizer</string>
+    <string name="eq_enable">Use equalizer</string>
+    <string name="eq_preamp">Pre</string>
+    <string name="eq_preset_flat">Flat</string>
+    <string name="eq_preset_anti_squeal">Anti-squeal</string>
+    <string name="eq_preset_voice">Voice</string>
+    <string name="eq_hint_idle">No squeal caught yet. When one happens, the slider to lower turns yellow.</string>
+    <string name="eq_hint_squeal">Last squeal at %1$s. Lower the %2$s slider (yellow) to stop it coming back.</string>
+    <string name="eq_tip">Squeals come from a band that is too loud: lower it to stop them. Boosting any band makes squeals more likely.</string>
     <string name="codec_button">Bluetooth codec settings (less delay) ›</string>
     <string name="codec_title">Bluetooth audio codec</string>
     <string name="codec_explain">Android only lets the phone\'s Settings app change the Bluetooth codec, so Live Mic takes you there. SBC often has less delay than AAC.</string>

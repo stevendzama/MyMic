@@ -89,6 +89,9 @@ class MainActivity : Activity() {
             MicSettings.save(this)
         }
 
+        findViewById<Button>(R.id.equalizer).setOnClickListener {
+            startActivity(Intent(this, EqualizerActivity::class.java))
+        }
         findViewById<Button>(R.id.codec_settings).setOnClickListener { showCodecHelp() }
     }
 

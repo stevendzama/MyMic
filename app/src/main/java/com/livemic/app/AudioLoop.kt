@@ -35,6 +35,11 @@ class AudioLoop(
     var squealsBlocked = 0
         private set
 
+    /** Pitch of the most recent squeal in Hz, or 0 if none yet. */
+    @Volatile
+    var lastSquealHz = 0.0
+        private set
+
     @Volatile private var running = false
     @Volatile private var record: AudioRecord? = null
     @Volatile private var track: AudioTrack? = null
@@ -136,6 +141,7 @@ class AudioLoop(
         val buf = ShortArray(chunk)
         val samples = FloatArray(chunk)
         val squeal = FeedbackSuppressor(rate)
+        val equalizer = Equalizer(rate)
         try {
             // Pre-fill with silence so starting up doesn't count as an underrun.
             out.write(ShortArray(bufferFrames), 0, bufferFrames)
@@ -163,7 +169,9 @@ class AudioLoop(
                 if (MicSettings.antiSqueal) {
                     squeal.process(samples, n)
                     squealsBlocked = squeal.notchCount
+                    lastSquealHz = squeal.lastSquealHz
                 }
+                if (MicSettings.eqEnabled) equalizer.process(samples, n)
 
                 val gain = MicSettings.gain * 32768f
                 var peak = 0

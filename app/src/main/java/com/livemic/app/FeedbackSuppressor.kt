@@ -25,6 +25,10 @@ class FeedbackSuppressor(private val rate: Int) {
     var notchCount = 0
         private set
 
+    /** Pitch of the most recent squeal in Hz, or 0 if none yet. */
+    var lastSquealHz = 0.0
+        private set
+
     private val highPass = Biquad.highPass(rate, 120.0)
     private val notches = ArrayList<Biquad>()
     private val notchFreqs = ArrayList<Double>()
@@ -114,6 +118,7 @@ class FeedbackSuppressor(private val rate: Int) {
 
     private fun addNotch(freq: Double) {
         duck = 0.5
+        lastSquealHz = freq
         if (notchFreqs.any { abs(it - freq) < freq * 0.03 }) return
         if (notches.size >= MAX_NOTCHES) {
             notches.removeAt(0)
