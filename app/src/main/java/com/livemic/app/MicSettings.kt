@@ -8,6 +8,12 @@ object MicSettings {
     @Volatile var noiseReduction = true
     @Volatile var antiSqueal = true
 
+    /** Echo gate strength, 0 (off) to 1; see [echoThresholdDb]. */
+    @Volatile var echoReduction = 0.5f
+
+    /** Gate threshold: stronger reduction treats louder sounds as a pause, -60 to -20 dBFS. */
+    fun echoThresholdDb() = -60f + 40f * echoReduction
+
     /** Equalizer band centres, matching VLC's 10-band equalizer. */
     val EQ_FREQS = doubleArrayOf(60.0, 170.0, 310.0, 600.0, 1000.0, 3000.0, 6000.0, 12000.0, 14000.0, 16000.0)
     const val EQ_MAX_DB = 20f
@@ -32,6 +38,7 @@ object MicSettings {
         gain = prefs.getFloat(KEY_GAIN, gain)
         noiseReduction = prefs.getBoolean(KEY_NOISE, noiseReduction)
         antiSqueal = prefs.getBoolean(KEY_ANTI_SQUEAL, antiSqueal)
+        echoReduction = prefs.getFloat(KEY_ECHO, echoReduction)
         eqEnabled = prefs.getBoolean(KEY_EQ_ENABLED, eqEnabled)
         eqPreampDb = prefs.getFloat(KEY_EQ_PREAMP, eqPreampDb)
         prefs.getString(KEY_EQ_BANDS, null)
@@ -47,6 +54,7 @@ object MicSettings {
             .putFloat(KEY_GAIN, gain)
             .putBoolean(KEY_NOISE, noiseReduction)
             .putBoolean(KEY_ANTI_SQUEAL, antiSqueal)
+            .putFloat(KEY_ECHO, echoReduction)
             .putBoolean(KEY_EQ_ENABLED, eqEnabled)
             .putFloat(KEY_EQ_PREAMP, eqPreampDb)
             .putString(KEY_EQ_BANDS, eqBandsDb.joinToString(","))
@@ -58,6 +66,7 @@ object MicSettings {
     private const val KEY_GAIN = "gain"
     private const val KEY_NOISE = "noise_reduction"
     private const val KEY_ANTI_SQUEAL = "anti_squeal"
+    private const val KEY_ECHO = "echo_reduction"
     private const val KEY_EQ_ENABLED = "eq_enabled"
     private const val KEY_EQ_PREAMP = "eq_preamp_db"
     private const val KEY_EQ_BANDS = "eq_bands_db"

@@ -115,6 +115,21 @@
             android:textColor="@color/text"
             android:textSize="15sp" />
 
+        <TextView
+            android:id="@+id/echo_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/text"
+            android:textSize="15sp" />
+
+        <SeekBar
+            android:id="@+id/echo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="100"
+            android:paddingVertical="12dp" />
+
         <Button
             android:id="@+id/equalizer"
             style="?android:attr/borderlessButtonStyle"

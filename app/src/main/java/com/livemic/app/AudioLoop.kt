@@ -142,6 +142,7 @@ class AudioLoop(
         val samples = FloatArray(chunk)
         val squeal = FeedbackSuppressor(rate)
         val equalizer = Equalizer(rate)
+        val echoGate = EchoGate(rate)
         try {
             // Pre-fill with silence so starting up doesn't count as an underrun.
             out.write(ShortArray(bufferFrames), 0, bufferFrames)
@@ -172,6 +173,7 @@ class AudioLoop(
                     lastSquealHz = squeal.lastSquealHz
                 }
                 if (MicSettings.eqEnabled) equalizer.process(samples, n)
+                if (MicSettings.echoReduction > 0f) echoGate.process(samples, n, MicSettings.echoThresholdDb())
 
                 val gain = MicSettings.gain * 32768f
                 var peak = 0

@@ -14,6 +14,8 @@
     <string name="anti_squeal">Stop squealing (anti-feedback)</string>
     <string name="squeals_blocked">Squeals blocked: %1$d</string>
     <string name="feedback_tip">Tip: if the speaker squeals, step away from it or lower the volume boost.</string>
+    <string name="echo_label">Echo reduction: %1$d%%</string>
+    <string name="echo_label_off">Echo reduction: off</string>
     <string name="eq_button">Equalizer (tame squeals) ›</string>
     <string name="eq_title">Equalizer</string>
     <string name="eq_enable">Use equalizer</string>

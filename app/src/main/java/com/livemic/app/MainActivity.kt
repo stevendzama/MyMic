@@ -89,6 +89,28 @@ class MainActivity : Activity() {
             MicSettings.save(this)
         }
 
+        // 0 = off; higher treats louder sounds as a pause, cutting more echo (and more quiet speech).
+        val echoLabel = findViewById<TextView>(R.id.echo_label)
+        val echo = findViewById<SeekBar>(R.id.echo)
+        fun showEcho() {
+            val percent = (MicSettings.echoReduction * 100).roundToInt()
+            echoLabel.text = if (percent == 0) getString(R.string.echo_label_off) else getString(R.string.echo_label, percent)
+        }
+        echo.progress = (MicSettings.echoReduction * 100).roundToInt()
+        showEcho()
+        echo.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(bar: SeekBar, progress: Int, fromUser: Boolean) {
+                MicSettings.echoReduction = progress / 100f
+                showEcho()
+            }
+
+            override fun onStartTrackingTouch(bar: SeekBar) {}
+
+            override fun onStopTrackingTouch(bar: SeekBar) {
+                MicSettings.save(this@MainActivity)
+            }
+        })
+
         findViewById<Button>(R.id.equalizer).setOnClickListener {
             startActivity(Intent(this, EqualizerActivity::class.java))
         }
