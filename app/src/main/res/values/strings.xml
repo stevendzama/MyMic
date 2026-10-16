@@ -12,6 +12,14 @@
     <string name="gain_label">Volume boost: %1$d%%</string>
     <string name="noise_reduction">Reduce background noise</string>
     <string name="feedback_tip">Tip: if the speaker squeals, step away from it or lower the volume boost.</string>
+    <string name="codec_button">Bluetooth codec settings (less delay) ›</string>
+    <string name="codec_title">Bluetooth audio codec</string>
+    <string name="codec_explain">Android only lets the phone\'s Settings app change the Bluetooth codec, so Live Mic takes you there. SBC often has less delay than AAC.</string>
+    <string name="codec_connect_first">Connect your Bluetooth speaker first. Without it, every codec is greyed out.</string>
+    <string name="codec_steps">In Developer options, scroll to Networking, tap Bluetooth audio codec and choose SBC. Then turn the speaker off and on so it reconnects.\n\nIf only SBC can be selected, your speaker is already using it.</string>
+    <string name="codec_unlock_steps">Developer options are turned off. On the next screen, tap Build number 7 times, then come back and tap this button again.</string>
+    <string name="codec_open_developer">Open Developer options</string>
+    <string name="codec_open_about">Open My Phone</string>
     <string name="channel_name">Live microphone</string>
     <string name="notification_title">Live Mic is on</string>
     <string name="notification_text">Your phone\'s mic is playing through the speaker</string>

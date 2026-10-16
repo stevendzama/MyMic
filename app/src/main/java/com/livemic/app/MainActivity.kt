@@ -2,6 +2,8 @@ package com.livemic.app
 
 import android.Manifest
 import android.app.Activity
+import android.app.AlertDialog
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.media.AudioManager
@@ -9,6 +11,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.provider.Settings
 import android.view.View
 import android.widget.Button
 import android.widget.ProgressBar
@@ -77,6 +80,43 @@ class MainActivity : Activity() {
         noise.setOnCheckedChangeListener { _, on ->
             MicSettings.noiseReduction = on
             MicSettings.save(this)
+        }
+
+        findViewById<Button>(R.id.codec_settings).setOnClickListener { showCodecHelp() }
+    }
+
+    /**
+     * Apps can't change the Bluetooth codec themselves (that API is reserved for the system),
+     * so explain the steps and open the Settings screen where the codec list lives.
+     */
+    private fun showCodecHelp() {
+        val developerOptionsOn =
+            Settings.Global.getInt(contentResolver, Settings.Global.DEVELOPMENT_SETTINGS_ENABLED, 0) == 1
+        val message = buildString {
+            append(getString(R.string.codec_explain))
+            if (Routing.bluetoothOutput(audioManager) == null) {
+                append("\n\n").append(getString(R.string.codec_connect_first))
+            }
+            append("\n\n").append(getString(if (developerOptionsOn) R.string.codec_steps else R.string.codec_unlock_steps))
+        }
+        AlertDialog.Builder(this)
+            .setTitle(R.string.codec_title)
+            .setMessage(message)
+            .setPositiveButton(if (developerOptionsOn) R.string.codec_open_developer else R.string.codec_open_about) { _, _ ->
+                openSettings(
+                    if (developerOptionsOn) Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS
+                    else Settings.ACTION_DEVICE_INFO_SETTINGS
+                )
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
+    }
+
+    private fun openSettings(action: String) {
+        try {
+            startActivity(Intent(action))
+        } catch (e: ActivityNotFoundException) {
+            startActivity(Intent(Settings.ACTION_SETTINGS))
         }
     }
 
