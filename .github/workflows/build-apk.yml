@@ -22,10 +22,25 @@ jobs:
         with:
           gradle-version: "8.9"
 
-      - name: Build debug APK
+      # Uses the LIVEMIC_KEYSTORE_B64 repository secret if you add one (so new builds install as
+      # updates); otherwise makes a throwaway key, and you uninstall the old app before updating.
+      - name: Build APK
+        env:
+          KEYSTORE_B64: ${{ secrets.LIVEMIC_KEYSTORE_B64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.LIVEMIC_KEYSTORE_PASSWORD }}
         run: |
-          gradle assembleDebug
-          cp app/build/outputs/apk/debug/app-debug.apk LiveMic.apk
+          export LIVEMIC_KEYSTORE="$RUNNER_TEMP/livemic.jks"
+          if [ -n "$KEYSTORE_B64" ]; then
+            echo "$KEYSTORE_B64" | base64 -d > "$LIVEMIC_KEYSTORE"
+            export LIVEMIC_KEYSTORE_PASSWORD="$KEYSTORE_PASSWORD"
+          else
+            export LIVEMIC_KEYSTORE_PASSWORD="$(openssl rand -hex 16)"
+            keytool -genkeypair -keystore "$LIVEMIC_KEYSTORE" -alias livemic \
+              -storepass "$LIVEMIC_KEYSTORE_PASSWORD" -keypass "$LIVEMIC_KEYSTORE_PASSWORD" \
+              -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Live Mic"
+          fi
+          gradle assembleRelease
+          cp app/build/outputs/apk/release/app-release.apk LiveMic.apk
 
       - uses: actions/upload-artifact@v4
         with:
