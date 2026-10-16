@@ -103,18 +103,35 @@ class MainActivity : Activity() {
             .setTitle(R.string.codec_title)
             .setMessage(message)
             .setPositiveButton(if (developerOptionsOn) R.string.codec_open_developer else R.string.codec_open_about) { _, _ ->
-                openSettings(
-                    if (developerOptionsOn) Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS
-                    else Settings.ACTION_DEVICE_INFO_SETTINGS
-                )
+                if (developerOptionsOn) {
+                    openSettings(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS, codecPreferenceKey())
+                } else {
+                    openSettings(Settings.ACTION_DEVICE_INFO_SETTINGS, highlightKey = "build_number")
+                }
             }
             .setNegativeButton(android.R.string.cancel, null)
             .show()
     }
 
-    private fun openSettings(action: String) {
+    /** Key of the codec item in AOSP Developer options; Android 12 replaced the list with a dialog. */
+    private fun codecPreferenceKey() =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) "bluetooth_audio_codec_settings"
+        else "bluetooth_select_a2dp_codec"
+
+    /**
+     * Opens a Settings screen. [highlightKey] uses the same unofficial extras as Settings search
+     * to scroll to and highlight one item; phones that ignore them just open the screen.
+     */
+    private fun openSettings(action: String, highlightKey: String? = null) {
+        val intent = Intent(action)
+        if (highlightKey != null) {
+            intent.putExtra(":settings:fragment_args_key", highlightKey)
+            intent.putExtra(":settings:show_fragment_args", Bundle().apply {
+                putString(":settings:fragment_args_key", highlightKey)
+            })
+        }
         try {
-            startActivity(Intent(action))
+            startActivity(intent)
         } catch (e: ActivityNotFoundException) {
             startActivity(Intent(Settings.ACTION_SETTINGS))
         }

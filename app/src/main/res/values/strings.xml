@@ -16,7 +16,7 @@
     <string name="codec_title">Bluetooth audio codec</string>
     <string name="codec_explain">Android only lets the phone\'s Settings app change the Bluetooth codec, so Live Mic takes you there. SBC often has less delay than AAC.</string>
     <string name="codec_connect_first">Connect your Bluetooth speaker first. Without it, every codec is greyed out.</string>
-    <string name="codec_steps">In Developer options, scroll to Networking, tap Bluetooth audio codec and choose SBC. Then turn the speaker off and on so it reconnects.\n\nIf only SBC can be selected, your speaker is already using it.</string>
+    <string name="codec_steps">Live Mic will jump to Bluetooth audio codec in Developer options (if your phone doesn\'t jump there, scroll down to Networking). Tap it, choose SBC, then turn the speaker off and on so it reconnects.\n\nIf only SBC can be selected, your speaker is already using it.</string>
     <string name="codec_unlock_steps">Developer options are turned off. On the next screen, tap Build number 7 times, then come back and tap this button again.</string>
     <string name="codec_open_developer">Open Developer options</string>
     <string name="codec_open_about">Open My Phone</string>
