@@ -82,6 +82,13 @@ class MainActivity : Activity() {
             MicSettings.save(this)
         }
 
+        val antiSqueal = findViewById<Switch>(R.id.anti_squeal)
+        antiSqueal.isChecked = MicSettings.antiSqueal
+        antiSqueal.setOnCheckedChangeListener { _, on ->
+            MicSettings.antiSqueal = on
+            MicSettings.save(this)
+        }
+
         findViewById<Button>(R.id.codec_settings).setOnClickListener { showCodecHelp() }
     }
 
@@ -189,7 +196,12 @@ class MainActivity : Activity() {
         toggle.text = getString(if (live) R.string.stop else R.string.start)
         meter.progress = ((loop?.level ?: 0f) * 100).roundToInt()
         status.text = when {
-            loop != null -> getString(R.string.status_live, loop.appDelayMs)
+            loop != null -> buildString {
+                append(getString(R.string.status_live, loop.appDelayMs))
+                if (MicSettings.antiSqueal && loop.squealsBlocked > 0) {
+                    append('\n').append(getString(R.string.squeals_blocked, loop.squealsBlocked))
+                }
+            }
             MicService.lastError != null -> MicService.lastError
             else -> getString(R.string.status_idle)
         }

@@ -30,6 +30,11 @@ class AudioLoop(
     var appDelayMs = 0f
         private set
 
+    /** Squeal pitches the anti-squeal filter is currently blocking. */
+    @Volatile
+    var squealsBlocked = 0
+        private set
+
     @Volatile private var running = false
     @Volatile private var record: AudioRecord? = null
     @Volatile private var track: AudioTrack? = null
@@ -129,6 +134,8 @@ class AudioLoop(
         resizeBuffer(bufferFrames)
 
         val buf = ShortArray(chunk)
+        val samples = FloatArray(chunk)
+        val squeal = FeedbackSuppressor(rate)
         try {
             // Pre-fill with silence so starting up doesn't count as an underrun.
             out.write(ShortArray(bufferFrames), 0, bufferFrames)
@@ -152,10 +159,16 @@ class AudioLoop(
                     noiseOn = wantNoise
                 }
 
-                val gain = MicSettings.gain
+                for (i in 0 until n) samples[i] = buf[i] / 32768f
+                if (MicSettings.antiSqueal) {
+                    squeal.process(samples, n)
+                    squealsBlocked = squeal.notchCount
+                }
+
+                val gain = MicSettings.gain * 32768f
                 var peak = 0
                 for (i in 0 until n) {
-                    val s = (buf[i] * gain).toInt().coerceIn(-32768, 32767)
+                    val s = (samples[i] * gain).toInt().coerceIn(-32768, 32767)
                     buf[i] = s.toShort()
                     peak = max(peak, abs(s))
                 }

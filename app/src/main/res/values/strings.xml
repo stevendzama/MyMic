@@ -11,6 +11,8 @@
     <string name="no_speaker_warning">Connect your Bluetooth speaker in your phone\'s Bluetooth settings first. Without it, sound comes out of the phone itself and will squeal.</string>
     <string name="gain_label">Volume boost: %1$d%%</string>
     <string name="noise_reduction">Reduce background noise</string>
+    <string name="anti_squeal">Stop squealing (anti-feedback)</string>
+    <string name="squeals_blocked">Squeals blocked: %1$d</string>
     <string name="feedback_tip">Tip: if the speaker squeals, step away from it or lower the volume boost.</string>
     <string name="codec_button">Bluetooth codec settings (less delay) ›</string>
     <string name="codec_title">Bluetooth audio codec</string>
