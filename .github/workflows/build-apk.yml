@@ -4,6 +4,9 @@ on:
   push:
   workflow_dispatch:
 
+permissions:
+  contents: write # to publish the APK as a release
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -20,9 +23,21 @@ jobs:
           gradle-version: "8.9"
 
       - name: Build debug APK
-        run: gradle assembleDebug
+        run: |
+          gradle assembleDebug
+          cp app/build/outputs/apk/debug/app-debug.apk LiveMic.apk
 
       - uses: actions/upload-artifact@v4
         with:
           name: LiveMic-apk
-          path: app/build/outputs/apk/debug/*.apk
+          path: LiveMic.apk
+
+      # Each build on main becomes the newest release, so this link always gets the latest APK:
+      # https://github.com/<owner>/<repo>/releases/latest/download/LiveMic.apk
+      - name: Publish release
+        if: github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: build-${{ github.run_number }}
+          name: Live Mic build ${{ github.run_number }}
+          files: LiveMic.apk

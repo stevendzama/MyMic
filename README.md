@@ -27,9 +27,9 @@ Requires Android 8.0 or newer.
 
 **Option B: GitHub (no installs)**
 1. Push this folder to a GitHub repository.
-2. The **Build APK** workflow runs automatically. Open the run under *Actions* and download
-   the `LiveMic-apk` artifact.
-3. Copy the APK to your phone and open it. Allow "install unknown apps" when asked.
+2. The **Build APK** workflow runs automatically and publishes the APK as a release.
+3. On your phone, open `https://github.com/<you>/<repo>/releases/latest/download/LiveMic.apk`
+   and install it. Allow "install unknown apps" when asked.
 
 ## Using it
 
